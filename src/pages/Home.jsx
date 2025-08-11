@@ -1,6 +1,8 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
+import ProductForm from "../components/ProductForm.jsx";
+import LoginForm from "./Login.jsx";
 
 function Home() {
   return (

@@ -1,4 +1,4 @@
-import API from "./api.js"
+import API from "./api.js";
 const API_URL = "http://localhost:8000";
 
 export const getAllProducts = async () => {
@@ -17,7 +17,7 @@ export const getAllProducts = async () => {
 export const getProduct = async (id) => {
   try {
     const response = await API.get(`/product/${id}`);
-      const product = response.data;
+    const product = response.data;
     if (product.image) {
       product.image = `${API_URL}/image/product/${product.image}`;
     }
@@ -30,8 +30,7 @@ export const getProduct = async (id) => {
 
 export const createProduct = async (product) => {
   try {
-    const response = await API.post(`/product/`, product
-    );
+    const response = await API.post(`/product/`, product);
     return response.data;
   } catch (error) {
     console.log("Create product failed: ", error);
@@ -39,23 +38,35 @@ export const createProduct = async (product) => {
   }
 };
 
-export const updateProduct = async () => {};
+export const updateProduct = async (product,id) => {
+  try {
+    const response = await API.patch(`/product/${id}`,product);
+    return response.data;
+  } catch (error) {
+    console.log("Update error", error);
+    throw error;
+  }
+};
 
-export const deleteProduct = async () => {};
+export const deleteProduct = async (id) => {
+  try {
+    const response = await API.delete(`/product/${id}`);
+    return response.data;
+  } catch (error) {
+    console.log("Delete error", error);
+    throw error;
+  }
+};
 
 export const uploadImage = async (id, file) => {
   try {
     const formData = new FormData();
     formData.append("file", file);
-    const response = await API.post(
-      `/product/upload-image/${id}`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        },
-      }
-    );
+    const response = await API.post(`/product/upload-image/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   } catch (error) {
     console.log("Upload Failed", error);

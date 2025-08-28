@@ -4,17 +4,23 @@ const API = axios.create({
   baseURL: "http://localhost:8000",
   withCredentials: true,
 });
-const token = localStorage.getItem("access_token");
-if (token) {
-  API.defaults.headers["Authorization"] = `Bearer ${token}`;
-}
+
+export const setAuthHeader = (token) => {
+  if (token) {
+    API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  } else {
+    delete API.defaults.headers.common["Authorization"];
+  }
+};
+
 let isRefreshing = false;
 let failedQueue = [];
 
 const processQueue = (error, token = null) => {
-  failedQueue.forEach((prom) =>
-    error ? prom.reject(error) : prom.resolve(token)
-  );
+  failedQueue.forEach((prom) => {
+    if (error) prom.reject(error);
+    else prom.resolve(token);
+  });
   failedQueue = [];
 };
 
@@ -22,29 +28,56 @@ API.interceptors.response.use(
   (res) => res,
   async (error) => {
     const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (!originalRequest) return Promise.reject(error);
+
+    if (
+      originalRequest.url &&
+      originalRequest.url.includes("/auth/refresh-token")
+    ) {
+      return Promise.reject(error);
+    }
+
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
+
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
-        }).then((token) => {
-          originalRequest.headers["Authorization"] = `Bearer ${token}`;
-          return API(originalRequest);
-        });
+        })
+          .then((token) => {
+            originalRequest.headers["Authorization"] = `Bearer ${token}`;
+            return API(originalRequest);
+          })
+          .catch((e) => Promise.reject(e));
       }
-      originalRequest._retry = true;
+
       isRefreshing = true;
       try {
-        const { data } = await API.post("/auth/refresh-token");
-        const newToken = data.access_token;
-        API.defaults.headers["Authorization"] = `Bearer ${newToken}`;
+        console.log("Attempting refresh-token, cookies:", document.cookie);
+        const response = await axios.post(
+          `${API.defaults.baseURL}/auth/refresh-token`,
+          {},
+          { withCredentials: true }
+        );
+        console.log("refresh-token response", response.status, response.data);
+        const newToken = response.data.access_token;
+        if (!newToken) throw new Error("No token from refresh");
+        setAuthHeader(newToken);
+        localStorage.setItem("access_token", newToken);
         processQueue(null, newToken);
+        isRefreshing = false;
+        originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
         return API(originalRequest);
       } catch (error) {
         processQueue(error, null);
-        window.location.href = "/auth/login";
-        return Promise.reject(error);
-      } finally {
         isRefreshing = false;
+        setAuthHeader(null);
+        localStorage.removeItem("access_token");
+        return Promise.reject(error);
       }
     }
     return Promise.reject(error);

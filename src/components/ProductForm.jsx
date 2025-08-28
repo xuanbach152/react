@@ -1,15 +1,22 @@
-import { useState } from "react";
-import { createProduct, uploadImage } from "../api/product.js";
+import { useState, useEffect } from "react";
+import {
+  createProduct,
+  uploadImage,
+  getProduct,
+  updateProduct,
+} from "../api/product.js";
+import { useParams } from "react-router-dom";
 
-export default function CreateProductForm() {
+export default function ProductForm() {
+  const { id } = useParams();
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
   const [description, setDescription] = useState("");
   const [category_name, setCategory_name] = useState("");
   const [image, setImage] = useState(null);
-
+  const [preview, setPreview] = useState("");
   const categories = [
-    "Trà Sữa",
+    "Trà sữa",
     "Trà hoa quả",
     "Nước ép",
     "Mỳ",
@@ -20,38 +27,63 @@ export default function CreateProductForm() {
     "Đồ chiên rán",
   ];
 
+  const getproduct = async (id) => {
+    try {
+      const product = await getProduct(id);
+      setName(product.name || "");
+      setPrice(product.price || 0);
+      setImage(product.image || "");
+      setDescription(product.description || "");
+      setCategory_name(product.category_name || "");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      getproduct(id);
+    }
+  }, [id]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const product = { name, price, description, category_name };
-      const createdProduct = await createProduct(product);
-
-      if (image && createdProduct && createdProduct.id) {
-        await uploadImage(createdProduct.id, image);
-        alert("Product created successfully with image!");
+      let result;
+      if (id) {
+        result = await updateProduct(product, id);
+        if (image) {
+          await uploadImage(id, image);
+          alert("Cập nhật sản phẩm thành công!");
+        }
       } else {
-        alert("Product created successfully (no image)");
-      }
+        result = await createProduct(product);
 
-      setName("");
-      setPrice(0);
-      setImage(null);
-      setDescription("No description");
-      setCategory_name("");
+        if (image && result && result.id) {
+          await uploadImage(result.id, image);
+        }
+        alert("Thêm thành công!");
+        setName("");
+        setPrice(0);
+        setImage(null);
+        setDescription("");
+        setCategory_name("");
+      }
     } catch (error) {
-      console.error("Error creating product:", error);
-      alert("Error creating product");
+      console.error("Error :", error);
+      alert(id ? "Lỗi cập nhật sản phẩm" : "Lỗi tạo sản phẩm");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100 flex items-center justify-center mt-20">
       <form
         onSubmit={handleSubmit}
-        className="bg-white shadow-lg rounded-xl p-8 w-full max-w-lg space-y-6"
+        className="bg-white shadow-lg rounded-xl p-8 w-full max-w-lg space-y-6 "
       >
         <h2 className="text-3xl font-bold text-center text-orange-600">
-          🍹 Thêm Sản Phẩm
+          {id ? "✏️ Sửa Sản Phẩm" : "🍹 Thêm Sản Phẩm"}
         </h2>
 
         <div>
@@ -118,19 +150,40 @@ export default function CreateProductForm() {
           <label className="block mb-1 font-semibold text-gray-700">
             Ảnh sản phẩm
           </label>
+
           <input
             type="file"
             accept="image/*"
-            onChange={(e) => setImage(e.target.files[0])}
+            onChange={(e) => {
+              const file = e.target.files[0];
+              setImage(file);
+              if (file) {
+                const url = URL.createObjectURL(file);
+                setPreview(url);
+              } else {
+                setPreview("");
+              }
+            }}
             className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-orange-400 focus:outline-none"
           />
+          {preview ? (
+            <img
+              src={preview}
+              alt="Chưa có ảnh"
+              className="mt-3 w-40 h-40 object-cover rounded-xl shadow border-2 border-orange-200 mx-auto"
+            />
+          ):<img
+              src={image}
+              alt="Chưa có ảnh"
+              className="mt-3 w-40 h-40 object-cover rounded-xl shadow border-2 border-orange-200 mx-auto"
+            />}
         </div>
 
         <button
           type="submit"
           className="w-full bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
         >
-          Thêm sản phẩm
+          {id ? "Cập nhật sản phẩm" : "Thêm sản phẩm"}
         </button>
       </form>
     </div>

@@ -6,8 +6,8 @@ import Menu from "./pages/Menu";
 import LoginForm from "./pages/Login";
 import RegisterForm from "./pages/Register";
 import ProductForm from "./components/ProductForm";
-
-
+import ProductEdit from "./components/ProductEdit";
+import UserPage from "./pages/UserPage";
 function App() {
   return (
     <BrowserRouter>
@@ -17,7 +17,10 @@ function App() {
         <Route path="/menu" element={<Menu />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
-        <Route path="/product/create" element={<ProductForm/>}/>
+        <Route path="/product/create" element={<ProductForm />} />
+        <Route path="/product/edit/:id" element={<ProductForm />} />
+        <Route path="/product/list" element={<ProductEdit />} />
+        <Route path="/user" element={<UserPage/>}/>
       </Routes>
       <Footer />
     </BrowserRouter>

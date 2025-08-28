@@ -1,6 +1,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { logout, verifyLogin } from "../api/auth.js";
+import { FaUser, FaPlusCircle, FaListUl, FaSignOutAlt } from "react-icons/fa";
 function Header() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -68,15 +69,31 @@ function Header() {
               </button>
 
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 bg-white text-black rounded-xl shadow-2xl border border-gray-200 w-48 animate-fade-in z-50">
+                <div className="absolute right-0 mt-4 bg-white text-black rounded-xl shadow-2xl border border-gray-200 w-75 animate-fade-in z-50">
                   <div className="flex flex-col py-2">
+                    <Link
+                      to="/user"
+                      className="flex items-center gap-2 px-5 py-3 hover:bg-green-100 transition-colors duration-150"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      <FaUser className="text-green-600"></FaUser>
+                      Tài khoản
+                    </Link>
                     <Link
                       to="/product/create"
                       className="flex items-center gap-2 px-5 py-3 hover:bg-green-100 transition-colors duration-150"
                       onClick={() => setDropdownOpen(false)}
                     >
-                      <span className="text-green-600">➕</span>
+                      <FaPlusCircle className="text-green-600"></FaPlusCircle>
                       Tạo sản phẩm
+                    </Link>
+                        <Link
+                      to="/product/list"
+                      className="flex items-center gap-2 px-5 py-3 hover:bg-green-100 transition-colors duration-150"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      <FaListUl className="text-green-600"></FaListUl>
+                      Danh sách sản phẩm
                     </Link>
                     <button
                       onClick={() => {
@@ -85,7 +102,7 @@ function Header() {
                       }}
                       className="flex items-center gap-2 px-5 py-3 hover:bg-red-100 text-red-600 transition-colors duration-150"
                     >
-                      <span>🚪</span>
+                      <FaSignOutAlt></FaSignOutAlt>
                       Đăng xuất
                     </button>
                   </div>

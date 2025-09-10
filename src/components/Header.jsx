@@ -58,7 +58,9 @@ function Header() {
           <Link to="/contact" className="hover:text-yellow-200">
             Liên hệ
           </Link>
-
+           <Link to="/admin" className="hover:text-yellow-200">
+            Quản trị viên
+          </Link>
           {isLoggin ? (
             <div className="relative">
               <button

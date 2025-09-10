@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { FaUser, FaClipboardList, FaCog } from "react-icons/fa";
-import { getUser } from "../api/user.js";
+import { getUser, updateUser } from "../api/user.js";
 import { getIdFromToken } from "../utils/decode.js";
 const menu = [
   {
@@ -27,6 +27,9 @@ export default function UserPage() {
   const [active, setActive] = useState("1");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setNewpassword] = useState("");
+  const [newname,setNewname] = useState("")
+  const [newemail,setNewemail]=useState("")
 
   const getInfor = async () => {
     try {
@@ -39,6 +42,22 @@ export default function UserPage() {
       setEmail(data.email);
     } catch (error) {
       console.log(`Error : ${error}`);
+      setUsername("");
+      setEmail("");
+    }
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("access_token");
+      console.log("getInfor token:", token);
+      const id = getIdFromToken(token);
+      const user = { newname, newemail, password };
+      const response = await updateUser(id, user);
+      setUsername(response.username);
+      setEmail(response.email);
+    } catch (error) {
+      console.log(`Error update : ${error}`);
       setUsername("");
       setEmail("");
     }
@@ -110,11 +129,56 @@ export default function UserPage() {
           {active === "3" && (
             <div className="flex flex-col items-center">
               <h2 className="text-2xl font-bold text-yellow-700 mb-2">
-                Cài đặt tài khoản
+                Cập nhật tài khoản
               </h2>
-              <p className="text-gray-600 mb-4">
-                Bạn có thể thay đổi thông tin tại đây.
-              </p>
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tên đăng nhập
+                  </label>
+                  <input
+                    type="text"
+                    value={newname}
+                    onChange={(e) => setNewname(e.target.value)}
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-400 focus:outline-none"
+                    placeholder={username}
+                    
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email
+                  </label>
+                  <input
+                    type="text"
+                    value={newemail}
+                    onChange={(e) => setNewemail(e.target.value)}
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-400 focus:outline-none"
+                    placeholder={email}
+                    
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Mật khẩu
+                  </label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setNewpassword(e.target.value)}
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-400 focus:outline-none"
+                    placeholder="Nhập mật khẩu mới"
+                    
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
+                >
+                  Lưu
+                </button>
+              </form>
             </div>
           )}
         </main>

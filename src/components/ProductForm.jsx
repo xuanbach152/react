@@ -5,10 +5,8 @@ import {
   getProduct,
   updateProduct,
 } from "../api/product.js";
-import { useParams } from "react-router-dom";
 
-export default function ProductForm() {
-  const { id } = useParams();
+export default function ProductForm({ id }) {
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
   const [description, setDescription] = useState("");
@@ -77,10 +75,10 @@ export default function ProductForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100 flex items-center justify-center mt-20">
+    <div className="min-h-screen bg-gray-300 flex items-center justify-center">
       <form
         onSubmit={handleSubmit}
-        className="bg-white shadow-lg rounded-xl p-8 w-full max-w-lg space-y-6 "
+        className="bg-gray-50 shadow-lg border-gray-400 border-2 rounded-2xl p-8 w-full max-w-lg space-y-6 "
       >
         <h2 className="text-3xl font-bold text-center text-orange-600">
           {id ? "✏️ Sửa Sản Phẩm" : "🍹 Thêm Sản Phẩm"}

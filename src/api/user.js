@@ -12,7 +12,6 @@ export const getAllUsers = async () => {
 
 export const getUser = async (id) => {
   try {
-  
     const response = await API.get(`/user/${id}`);
     return response.data;
   } catch (error) {
@@ -22,7 +21,13 @@ export const getUser = async (id) => {
 };
 export const updateUser = async (id, user) => {
   try {
-    const response = await API.put(`/user/${id}`, user);
+    const updateData = {};
+
+    if (user.newname) updateData.username = user.newname;
+    if (user.newemail) updateData.email = user.newemail;
+    if (user.password) updateData.password = user.password;
+
+    const response = await API.put(`/user/${id}`, updateData);
     return response.data;
   } catch (error) {
     console.log(error);
@@ -38,4 +43,3 @@ export const deleteUser = async (id) => {
     throw error;
   }
 };
-

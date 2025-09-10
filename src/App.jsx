@@ -8,6 +8,7 @@ import RegisterForm from "./pages/Register";
 import ProductForm from "./components/ProductForm";
 import ProductEdit from "./components/ProductEdit";
 import UserPage from "./pages/UserPage";
+import AdminPage from "./pages/AdminPage";
 function App() {
   return (
     <BrowserRouter>
@@ -20,7 +21,8 @@ function App() {
         <Route path="/product/create" element={<ProductForm />} />
         <Route path="/product/edit/:id" element={<ProductForm />} />
         <Route path="/product/list" element={<ProductEdit />} />
-        <Route path="/user" element={<UserPage/>}/>
+        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/user" element={<UserPage />} />
       </Routes>
       <Footer />
     </BrowserRouter>

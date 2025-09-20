@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import ProductCard from "./ProductCard.jsx";
 import { getAllProducts } from "../api/product.js";
-import { FaFilter, FaGrid3X3, FaList, FaSearch } from "react-icons/fa";
+import { FaFilter, FaTh, FaList, FaSearch } from "react-icons/fa";
 
 function ProductList({ search = "", category = "Tất cả" }) {
   const [products, setProducts] = useState([]);
@@ -145,7 +145,7 @@ function ProductList({ search = "", category = "Tất cả" }) {
                     : "text-gray-500 hover:text-gray-700"
                 }`}
               >
-                <FaGrid3X3 className="text-sm" />
+                <FaTh className="text-sm" />
               </button>
               <button
                 onClick={() => setViewMode("list")}

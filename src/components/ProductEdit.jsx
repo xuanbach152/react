@@ -3,7 +3,7 @@ import { getAllProducts, deleteProduct } from "../api/product";
 
 function ProductEdit({ onEdit }) {
   const [products, setProducts] = useState([]);
-
+  const [searchText, setSearchText] = useState("");
   useEffect(() => {
     const fetchProducts = async () => {
       const data = await getAllProducts();
@@ -23,11 +23,24 @@ function ProductEdit({ onEdit }) {
     onEdit(id);
   };
 
+  const filterproduct = products.filter((product) =>
+    product.name.toLowerCase().includes(searchText.toLowerCase())
+  );
+
   return (
-    <div className="max-w-6xl mx-auto mt-20 px-4">
+    <div className="max-w-6xl mx-auto mt-10 px-4">
       <h2 className="text-3xl mb-8 text-center font-bold text-gray-800">
         Danh sách sản phẩm
       </h2>
+      <div className="mb-6 flex justify-center">
+        <input
+          type="text"
+          placeholder="Tìm kiếm sản phẩm..."
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          className="w-full md:w-1/2 px-4 py-2 border rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
+        />
+      </div>
       <div className="overflow-x-auto rounded-2xl shadow-lg bg-white">
         <table className="w-full text-sm text-gray-700">
           <thead>
@@ -40,7 +53,7 @@ function ProductEdit({ onEdit }) {
             </tr>
           </thead>
           <tbody>
-            {products.map((product, idx) => (
+            {filterproduct.map((product, idx) => (
               <tr
                 key={product.id}
                 className={`transition-all border-2 border-gray-300 duration-200 ${
@@ -81,6 +94,13 @@ function ProductEdit({ onEdit }) {
                 </td>
               </tr>
             ))}
+            {filterproduct.length === 0 && (
+              <tr>
+                <td colSpan="5" className="p-6 text-center text-gray-500">
+                  Không tìm thấy sản phẩm nào.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
